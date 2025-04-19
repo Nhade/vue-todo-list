@@ -46,7 +46,7 @@
 import { ref } from "vue";
 import BaseButton from "./BaseButtons.vue";
 
-const emit = defineEmits(["cancel", "saved"]);
+const emit = defineEmits(["cancel", "saved", "alert"]);
 const props = defineProps({
     sidebarOpen: Boolean
 });
@@ -74,18 +74,15 @@ function onSave() {
     const name = taskName.value.trim();
 
     //   if (!storage.getCurrentListName()) {
-    //     // dom.showAlert('Please create a list first!')
-    //     alert('Please create a list first!')
+    //     emit("alert", "Please create a list first!");
     //     return
     //   }
     if (!name) {
-        // dom.showAlert('Task name cannot be empty!')
-        alert("Task name cannot be empty!");
+        emit("alert", "Task name cannot be empty!");
         return;
     }
     //   if (storage.currentListHasTask(name)) {
-    //     // dom.showAlert('A task with this name already exists!')
-    //     alert('A task with this name already exists!')
+    //     emit("alert", "A task with this name already exists!");
     //     return
     //   }
 
@@ -97,13 +94,11 @@ function onSave() {
             dueMinute.value <= 59
         )
     ) {
-        // dom.showAlert('Invalid time!')
-        alert("Invalid time!");
+        emit("alert", "Invalid time!");
         return;
     }
     if (selectedPriority.value === "Select Priority") {
-        // dom.showAlert('Please select a priority!')
-        alert("Please select a priority!");
+        emit("alert", "Please select a priority!");
         return;
     }
 
@@ -130,11 +125,9 @@ function onSave() {
         emit("saved", task);
     } catch (e) {
         if (e instanceof RangeError) {
-            //   dom.showAlert('Invalid date!')
-            alert("Invalid date!");
+            emit("alert", "Invalid date!");
         } else {
-            //   dom.showAlert('Something went wrong, please try again.')
-            alert("Something went wrong, please try again.");
+            emit("alert", "Something went wrong, please try again.");
             console.error(e);
         }
     }
