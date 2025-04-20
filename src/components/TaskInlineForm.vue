@@ -43,49 +43,49 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { useTodoStore } from "../stores/useTodoStore";
-import BaseButton from "./BaseButtons.vue";
+import { ref } from "vue"
+import { useTodoStore } from "../stores/useTodoStore"
+import BaseButton from "./BaseButtons.vue"
 
-const todo = useTodoStore();
+const todo = useTodoStore()
 
-const emit = defineEmits(["cancel", "saved", "alert"]);
+const emit = defineEmits(["cancel", "saved", "alert"])
 const props = defineProps({
     sidebarOpen: Boolean
-});
+})
 
-const taskName = ref("");
-const taskDescription = ref("");
-const dueDate = ref("");
-const dueHour = ref(0);
-const dueMinute = ref(0);
+const taskName = ref("")
+const taskDescription = ref("")
+const dueDate = ref("")
+const dueHour = ref(0)
+const dueMinute = ref(0)
 
-const priorities = ["Urgent", "Very High", "High", "Medium", "Low"];
-const selectedPriority = ref("Select Priority");
-const dropdownOpen = ref(false);
+const priorities = ["Urgent", "Very High", "High", "Medium", "Low"]
+const selectedPriority = ref("Select Priority")
+const dropdownOpen = ref(false)
 
 function toggleDropdown() {
-    dropdownOpen.value = !dropdownOpen.value;
+    dropdownOpen.value = !dropdownOpen.value
 }
 
 function selectPriority(priority) {
-    selectedPriority.value = priority;
-    dropdownOpen.value = false;
+    selectedPriority.value = priority
+    dropdownOpen.value = false
 }
 
 function onSave() {
-    const name = taskName.value.trim();
+    const name = taskName.value.trim()
 
     if (!todo.currentList) {
-        emit("alert", "Please create a list first!");
+        emit("alert", "Please create a list first!")
         return
     }
     if (!name) {
-        emit("alert", "Task name cannot be empty!");
-        return;
+        emit("alert", "Task name cannot be empty!")
+        return
     }
     if (todo.currentTasks.some(t => t.name === name)) {
-        emit("alert", "A task with this name already exists!");
+        emit("alert", "A task with this name already exists!")
         return
     }
 
@@ -97,23 +97,17 @@ function onSave() {
             dueMinute.value <= 59
         )
     ) {
-        emit("alert", "Invalid time!");
-        return;
+        emit("alert", "Invalid time!")
+        return
     }
     if (selectedPriority.value === "Select Priority") {
-        emit("alert", "Please select a priority!");
-        return;
+        emit("alert", "Please select a priority!")
+        return
     }
 
     try {
-        const [y, m, d] = dueDate.value.split("-").map(Number);
-        const datetime = new Date(y, m - 1, d, dueHour.value, dueMinute.value);
-        // const task = new Task(
-        //   name,
-        //   datetime.toString(),
-        //   selectedPriority.value,
-        //   taskDescription.value
-        // )
+        const [y, m, d] = dueDate.value.split("-").map(Number)
+        const datetime = new Date(y, m - 1, d, dueHour.value, dueMinute.value)
         const task = {
             name,
             description: taskDescription.value,
@@ -121,30 +115,28 @@ function onSave() {
             priority: selectedPriority.value
         }
 
-        // storage.addTask(task)
-        // dom.createTask(task, storage.getTasks())
-        todo.addTask(task);
+        todo.addTask(task)
 
-        taskName.value = "";
-        taskDescription.value = "";
-        dueDate.value = "";
-        dueHour.value = 0;
-        dueMinute.value = 0;
-        selectedPriority.value = "Select Priority";
+        taskName.value = ""
+        taskDescription.value = ""
+        dueDate.value = ""
+        dueHour.value = 0
+        dueMinute.value = 0
+        selectedPriority.value = "Select Priority"
 
-        emit("saved", task);
+        emit("saved", task)
     } catch (e) {
         if (e instanceof RangeError) {
-            emit("alert", "Invalid date!");
+            emit("alert", "Invalid date!")
         } else {
-            emit("alert", "Something went wrong, please try again.");
-            console.error(e);
+            emit("alert", "Something went wrong, please try again.")
+            console.error(e)
         }
     }
 }
 
 function onCancel() {
-    emit("cancel");
+    emit("cancel")
 }
 </script>
 

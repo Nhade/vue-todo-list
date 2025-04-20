@@ -21,13 +21,10 @@
                 </div>
             </div>
 
-            <!-- lists -->
             <div class="menu-by-list">
                 <span class="title-small">Lists</span>
-
                 <div v-for="lst in lists" :key="lst.name" :class="{ selected: lst.name === selectedList }"
                     @click="selectList(lst.name)">
-                    <!-- square bullet -->
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24">
                         <rect x="4" y="4" width="16" height="16" stroke="currentColor" stroke-width="2" rx="4" ry="4" />
                     </svg>
@@ -62,9 +59,6 @@
 <script setup>
 import { ref, nextTick } from 'vue'
 
-// props:
-// - lists: array of { name: String, pendingCount: Number }
-// - initialSelectedList / initialFilter
 const props = defineProps({
     lists: {
         type: Array,
@@ -77,12 +71,6 @@ const props = defineProps({
     }
 })
 
-// emits:
-// - toggle-menu
-// - change-filter (payload = filter id)
-// - change-list   (payload = list name)
-// - create-list   (payload = new list name)
-// - alert         (payload = message)
 const emit = defineEmits([
     'toggle-menu',
     'change-filter',
@@ -124,11 +112,9 @@ const dateFilters = [
     }
 ]
 
-// reactive selection state
 const selectedFilter = ref(props.initialFilter)
 const selectedList = ref(props.initialSelectedList || '')
 
-// list‑creation form state
 const creating = ref(false)
 const newListName = ref('')
 const newListInput = ref(null)

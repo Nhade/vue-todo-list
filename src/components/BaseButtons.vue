@@ -19,8 +19,8 @@ export default {
   computed: {
     buttonClass() {
       return [
-        'btn', // base button styling
-        `btn-${this.variant}`, // variant-specific styling, e.g., btn-primary, btn-secondary
+        'btn',
+        `btn-${this.variant}`,
         { 'btn-disabled': this.disabled }
       ]
     }

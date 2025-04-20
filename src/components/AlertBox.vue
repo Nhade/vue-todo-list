@@ -9,7 +9,6 @@
 <script setup>
 import { ref } from 'vue'
 
-// reactive state
 const message = ref('')
 const visible = ref(false)
 let timer = null
