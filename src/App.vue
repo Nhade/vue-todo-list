@@ -43,9 +43,15 @@ function handleFilter(f) {
 
 <template>
   <div>
-    <h1>Basic Todo List</h1>
+    <h1>Todo List</h1>
     <AlertBox ref="alertRef" />
-    <BaseButton variant="primary" @click="toggleSidebar">Toggle Sidebar</BaseButton>
+    <BaseButton variant="primary" @click="sidebarOpen = true">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+          d="M5 12h14m-7 7V5" />
+      </svg>
+      Add New Task
+    </BaseButton>
     <TaskList />
     <TaskMenu :lists="menuLists" :initial-selected-list="todo.currentList" :initial-filter="todo.filterByDate"
       @change-filter="handleFilter" @change-list="handleSelectList" @create-list="handleCreateList"
