@@ -44,7 +44,10 @@
 
 <script setup>
 import { ref } from "vue";
+import { useTodoStore } from "../stores/useTodoStore";
 import BaseButton from "./BaseButtons.vue";
+
+const todo = useTodoStore();
 
 const emit = defineEmits(["cancel", "saved", "alert"]);
 const props = defineProps({
@@ -73,18 +76,18 @@ function selectPriority(priority) {
 function onSave() {
     const name = taskName.value.trim();
 
-    //   if (!storage.getCurrentListName()) {
-    //     emit("alert", "Please create a list first!");
-    //     return
-    //   }
+    if (!todo.currentList) {
+        emit("alert", "Please create a list first!");
+        return
+    }
     if (!name) {
         emit("alert", "Task name cannot be empty!");
         return;
     }
-    //   if (storage.currentListHasTask(name)) {
-    //     emit("alert", "A task with this name already exists!");
-    //     return
-    //   }
+    if (todo.currentTasks.some(t => t.name === name)) {
+        emit("alert", "A task with this name already exists!");
+        return
+    }
 
     if (
         !(
@@ -111,9 +114,16 @@ function onSave() {
         //   selectedPriority.value,
         //   taskDescription.value
         // )
+        const task = {
+            name,
+            description: taskDescription.value,
+            due: datetime,
+            priority: selectedPriority.value
+        }
 
         // storage.addTask(task)
         // dom.createTask(task, storage.getTasks())
+        todo.addTask(task);
 
         taskName.value = "";
         taskDescription.value = "";
