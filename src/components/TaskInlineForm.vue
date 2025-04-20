@@ -3,7 +3,12 @@
         <div class="sidebar-content">
             <span class="title-medium">Add Task</span>
 
-            <input type="text" v-model="taskName" placeholder="Task Name" id="task-name" />
+            <div class="task-name-container">
+                <input type="text" v-model="taskName" placeholder="Task Name" id="task-name" />
+                <BaseButton variant="tertiary" @click="fetchActivity" :disabled="isFetchingActivity">
+                    Bored 🎲
+                </BaseButton>
+            </div>
 
             <textarea v-model="taskDescription" placeholder="Task Description"></textarea>
 
@@ -64,6 +69,8 @@ const priorities = ["Urgent", "Very High", "High", "Medium", "Low"]
 const selectedPriority = ref("Select Priority")
 const dropdownOpen = ref(false)
 
+const isFetchingActivity = ref(false)
+
 function toggleDropdown() {
     dropdownOpen.value = !dropdownOpen.value
 }
@@ -71,6 +78,22 @@ function toggleDropdown() {
 function selectPriority(priority) {
     selectedPriority.value = priority
     dropdownOpen.value = false
+}
+
+async function fetchActivity() {
+    isFetchingActivity.value = true
+    try {
+        const response = await fetch('https://bored.api.lewagon.com/api/activity')
+        if (!response.ok) {
+            throw new Error(`HTTP error, response status: ${response.status}`)
+        }
+        const data = await response.json()
+        taskName.value = data.activity
+    } catch (e) {
+        console.error(e)
+        emit('alert', 'Failed to fetch activity. Please try again later.')
+    }
+    isFetchingActivity.value = false
 }
 
 function onSave() {
@@ -198,6 +221,10 @@ function onCancel() {
 .sidebar-content textarea:invalid {
     border: 2px solid #ee4342;
     box-shadow: 0px 0px 0px 3px hsla(0, 83%, 60%, 30%);
+}
+
+.task-name-container {
+    display: flex;
 }
 
 .sidebar-content input#task-name {
