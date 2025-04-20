@@ -25,7 +25,8 @@
                 <span class="title-small">Lists</span>
                 <div v-for="lst in lists" :key="lst.name" :class="{ selected: lst.name === selectedList }"
                     @click="selectList(lst.name)">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        viewBox="0 0 24 24">
                         <rect x="4" y="4" width="16" height="16" stroke="currentColor" stroke-width="2" rx="4" ry="4" />
                     </svg>
                     <span>{{ lst.name }}</span>
@@ -174,7 +175,7 @@ function submitCreate() {
     padding: 2rem;
     height: auto;
     width: inherit;
-    border-radius: 2rem;
+    border-radius: 1rem;
     background-color: hsl(0, 0%, 22%);
 }
 

@@ -169,7 +169,7 @@ function onCancel() {
     width: 100%;
     margin: 0px 2rem;
     padding: 2rem;
-    border-radius: 2rem;
+    border-radius: 1rem;
     box-sizing: border-box;
 }
 
@@ -228,13 +228,13 @@ function onCancel() {
 }
 
 .task-datetime-container input[type="date"] {
-    height: 2rem;
+    height: 3rem;
     border-radius: 0.5rem;
     padding: 0 0.5rem;
 }
 
 .task-datetime-container input[type="number"] {
-    height: 2rem;
+    height: 3rem;
     width: 4rem;
     border-radius: 0.5rem;
     padding: 0 0.5rem;
@@ -249,11 +249,10 @@ function onCancel() {
     margin-right: auto;
 }
 
-.task-priority-container input {
+.task-priority-container button {
     justify-self: flex-end;
-    height: 2rem;
+    height: 3rem;
     border-radius: 0.5rem;
-    padding: 0 0.5rem;
 }
 
 .sidebar-button-container {

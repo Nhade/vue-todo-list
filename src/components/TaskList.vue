@@ -96,6 +96,10 @@ li {
 
 li:hover:not(.no-tasks-message) {
     background-color: hsl(0, 0%, 28%);
+
+    .secondary-row span {
+        border-color: hsla(0, 0%, 100%, 0.4);
+    }
 }
 
 .primary-row {
@@ -142,6 +146,8 @@ input[type="checkbox"] {
     padding: 0.1rem 0.4rem;
     border-radius: 0.25rem;
     white-space: nowrap;
+    border: 1px solid transparent;
+    transition: 0.15s;
 }
 
 li.active {
