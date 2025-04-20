@@ -66,6 +66,11 @@ export const useTodoStore = defineStore("todo", () => {
     });
   }
 
+  function removeTask(taskId) {
+    const l = lists.value.find((x) => x.name === currentList.value);
+    l.tasks = l.tasks.filter((t) => t.id !== taskId);
+  }
+
   function toggleDone(taskId) {
     const l = lists.value.find((x) => x.name === currentList.value);
     const t = l?.tasks.find((x) => x.id === taskId);
@@ -83,6 +88,7 @@ export const useTodoStore = defineStore("todo", () => {
     selectList,
     setDateFilter,
     addTask,
+    removeTask,
     toggleDone,
   };
 });

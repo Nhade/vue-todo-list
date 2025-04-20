@@ -5,6 +5,7 @@ import AlertBox from './components/AlertBox.vue'
 import BaseButton from './components/BaseButtons.vue'
 import TaskMenu from './components/TaskMenu.vue'
 import TaskInlineForm from './components/TaskInlineForm.vue'
+import TaskList from './components/TaskList.vue'
 
 const todo = useTodoStore()
 todo.load()
@@ -45,6 +46,7 @@ function handleFilter(f) {
     <h1>Basic Todo List</h1>
     <AlertBox ref="alertRef" />
     <BaseButton variant="primary" @click="toggleSidebar">Toggle Sidebar</BaseButton>
+    <TaskList />
     <TaskMenu :lists="menuLists" :initial-selected-list="todo.currentList" :initial-filter="todo.filterByDate"
       @change-filter="handleFilter" @change-list="handleSelectList" @create-list="handleCreateList"
       @alert="(msg) => showAlert(msg)" />
