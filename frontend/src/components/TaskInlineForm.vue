@@ -303,7 +303,7 @@ function onCancel() {
 .dropdown-container {
     position: absolute;
     padding: 0.25rem 0;
-    top: calc(2.5rem+4px);
+    top: calc(2.5rem + 4px);
     left: 0px;
     width: 100%;
     background-color: hsl(0, 0%, 30%);
