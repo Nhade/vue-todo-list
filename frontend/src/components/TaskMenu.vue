@@ -140,6 +140,7 @@ function cancelCreate() {
     newListName.value = ''
 }
 
+/*
 function submitCreate() {
     const name = newListName.value.trim()
     if (!name) {
@@ -153,6 +154,7 @@ function submitCreate() {
     emit('create-list', name)
     cancelCreate()
 }
+*/
 </script>
 
 <style scoped>

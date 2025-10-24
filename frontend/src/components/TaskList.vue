@@ -32,29 +32,31 @@ import BaseButtons from './BaseButtons.vue'
 
 const todo = useTodoStore()
 
-const tasksToShow = computed(() => {
-    const raw = todo.currentTasks
-    const filter = todo.filterByDate
-    if (!filter) return raw
+// const tasksToShow = computed(() => {
+//     const raw = todo.currentTasks
+//     const filter = todo.filterByDate
+//     if (!filter) return raw
 
-    return raw.filter(t => {
-        try {
-            const date = parseISO(t.due)
-            switch (filter) {
-                case 'today':
-                    return isToday(date)
-                case 'past':
-                    return isPast(date)
-                case 'upcoming':
-                default:
-                    return isFuture(date)
-            }
-        } catch (e) {
-            console.error(`Invalid date on task "${t.name}": ${t.due}`, e)
-            return false
-        }
-    })
-})
+//     return raw.filter(t => {
+//         try {
+//             const date = parseISO(t.due)
+//             switch (filter) {
+//                 case 'today':
+//                     return isToday(date)
+//                 case 'past':
+//                     return isPast(date)
+//                 case 'upcoming':
+//                 default:
+//                     return isFuture(date)
+//             }
+//         } catch (e) {
+//             console.error(`Invalid date on task "${t.name}": ${t.due}`, e)
+//             return false
+//         }
+//     })
+// })
+
+const tasksToShow = computed(() => todo.tasks);
 
 function toggleDone(id) {
     todo.toggleDone(id)

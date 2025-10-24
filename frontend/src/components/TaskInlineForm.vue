@@ -99,15 +99,11 @@ async function fetchActivity() {
 function onSave() {
     const name = taskName.value.trim()
 
-    if (!todo.currentList) {
-        emit("alert", "Please create a list first!")
-        return
-    }
     if (!name) {
         emit("alert", "Task name cannot be empty!")
         return
     }
-    if (todo.currentTasks.some(t => t.name === name)) {
+    if (todo.tasks.some(t => t.name === name)) {
         emit("alert", "A task with this name already exists!")
         return
     }

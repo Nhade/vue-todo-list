@@ -8,7 +8,7 @@ import TaskInlineForm from './components/TaskInlineForm.vue'
 import TaskList from './components/TaskList.vue'
 
 const todo = useTodoStore()
-todo.load()
+todo.fetchTasks()
 
 const sidebarOpen = ref(false)
 const alertRef = ref()
@@ -20,13 +20,14 @@ function showAlert(msg) {
   alertRef.value.showAlert(msg)
 }
 
-const menuLists = computed(() =>
-  todo.lists.map(l => ({
-    name: l.name,
-    pendingCount: todo.pendingCount(l.name)
-  }))
-)
+const menuLists = computed(() => [
+  {
+    name: 'Default',
+    pendingCount: todo.pendingCount
+  }
+])
 
+/*
 function handleCreateList(name) {
   todo.addList(name)
   todo.selectList(name)
@@ -39,6 +40,7 @@ function handleSelectList(name) {
 function handleFilter(f) {
   todo.setDateFilter(f)
 }
+*/
 </script>
 
 <template>
@@ -53,9 +55,7 @@ function handleFilter(f) {
       Add New Task
     </BaseButton>
     <TaskList />
-    <TaskMenu :lists="menuLists" :initial-selected-list="todo.currentList" :initial-filter="todo.filterByDate"
-      @change-filter="handleFilter" @change-list="handleSelectList" @create-list="handleCreateList"
-      @alert="(msg) => showAlert(msg)" />
+    <TaskMenu :lists="menuLists" @alert="(msg) => showAlert(msg)" />
     <TaskInlineForm @cancel="toggleSidebar" @alert="(msg) => showAlert(msg)" @saved="toggleSidebar"
       :sidebarOpen="sidebarOpen" />
   </div>

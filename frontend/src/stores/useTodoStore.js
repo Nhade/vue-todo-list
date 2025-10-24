@@ -1,94 +1,125 @@
 import { defineStore } from "pinia";
-import { ref, computed, watch } from "vue";
-import { v4 as uuid } from "uuid";
+import { computed, ref } from "vue";
 
 export const useTodoStore = defineStore("todo", () => {
-  const lists = ref([]); // [{ name, tasks: [ … ] }]
-  const currentList = ref(""); // active list name
-  const filterByDate = ref("upcoming"); // 'upcoming' | 'today' | 'past'
+  // --- STATE ---
 
-  function load() {
-    const raw = localStorage.getItem("vue-todos");
-    if (raw) {
-      const data = JSON.parse(raw);
-      lists.value = data.lists ?? [];
-      currentList.value = data.currentList ?? "";
-      filterByDate.value = data.filterByDate ?? "upcoming";
+  /**
+   * The main array of tasks fetched from the backend.
+   * @type {import("vue").Ref<Array<object>>}
+   */
+  const tasks = ref([]);
+
+  /**
+   * The base URL for the backend API.
+   * @type {string}
+   */
+  const API_URL = "http://localhost:8000";
+
+  // --- GETTERS ---
+
+  /**
+   * Computes the number of tasks that are not marked as done.
+   * @type {import("vue").ComputedRef<number>}
+   */
+  const pendingCount = computed(
+    () => tasks.value.filter((t) => !t.done).length
+  );
+
+  // --- ACTIONS ---
+
+  /**
+   * Fetches all tasks from the backend and populates the state.
+   * Should be called when the application initializes.
+   */
+  async function fetchTasks() {
+    try {
+      const response = await fetch(`${API_URL}/todos`);
+      if (!response.ok) throw new Error("Failed to fetch tasks");
+      tasks.value = await response.json();
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
     }
   }
-  function save() {
-    localStorage.setItem(
-      "vue-todos",
-      JSON.stringify({
-        lists: lists.value,
-        currentList: currentList.value,
-        filterByDate: filterByDate.value,
-      })
-    );
-  }
-  watch([lists, currentList, filterByDate], save, { deep: true });
 
-  const pendingCount = (name) => {
-    const l = lists.value.find((x) => x.name === name);
-    return l ? l.tasks.filter((t) => !t.done).length : 0;
-  };
-
-  const currentTasks = computed(() => {
-    const l = lists.value.find((x) => x.name === currentList.value);
-    return l ? l.tasks : [];
-  });
-
-  function addList(name) {
-    lists.value.push({ name, tasks: [] });
-  }
-
-  function selectList(name) {
-    currentList.value = name;
-  }
-
-  function setDateFilter(f) {
-    filterByDate.value = f;
-  }
-
-  function addTask({ name, description, due, priority }) {
-    const l = lists.value.find((x) => x.name === currentList.value);
-    if (!l) {
-      console.log("No current list");
-      return;
+  /**
+   * Adds a new task.
+   * @param {object} taskData - The task data { name, description, due, priority }.
+   */
+  async function addTask(taskData) {
+    try {
+      const response = await fetch(`${API_URL}/todos`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(taskData),
+      });
+      if (!response.ok) throw new Error("Failed to add task");
+      const newTask = await response.json();
+      tasks.value.push(newTask);
+    } catch (error) {
+      console.error("Error adding task:", error);
     }
-    l.tasks.push({
-      id: uuid(),
-      name,
-      description,
-      due: due.toISOString(),
-      priority,
-      done: false,
-    });
   }
 
-  function removeTask(taskId) {
-    const l = lists.value.find((x) => x.name === currentList.value);
-    l.tasks = l.tasks.filter((t) => t.id !== taskId);
+  /**
+   * Removes a task by its ID.
+   * @param {string} taskId - The UUID of the task to remove.
+   */
+  async function removeTask(taskId) {
+    try {
+      const response = await fetch(`${API_URL}/todos/${taskId}`, {
+        method: "DELETE",
+      });
+      if (response.status !== 204) throw new Error("Failed to delete task");
+      tasks.value = tasks.value.filter((t) => t.id !== taskId);
+    } catch (error) {
+      console.error("Error deleting task:", error);
+    }
   }
 
+  /**
+   * Updates a task with new data.
+   * @param {string} taskId - The UUID of the task to update.
+   * @param {object} updateData - The fields to update (e.g., { done: true } or { name: "New name" }).
+   */
+  async function updateTask(taskId, updateData) {
+    try {
+      const response = await fetch(`${API_URL}/todos/${taskId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updateData),
+      });
+      if (!response.ok) throw new Error("Failed to update task");
+      const updatedTask = await response.json();
+      const index = tasks.value.findIndex((t) => t.id === taskId);
+      if (index !== -1) {
+        tasks.value[index] = updatedTask;
+      }
+    } catch (error) {
+      console.error("Error updating task:", error);
+    }
+  }
+
+  /**
+   * A convenience action to toggle the 'done' status of a task.
+   * @param {string} taskId - The UUID of the task to toggle.
+   */
   function toggleDone(taskId) {
-    const l = lists.value.find((x) => x.name === currentList.value);
-    const t = l?.tasks.find((x) => x.id === taskId);
-    if (t) t.done = !t.done;
+    const task = tasks.value.find((t) => t.id === taskId);
+    if (task) {
+      updateTask(taskId, { done: !task.done });
+    }
   }
 
+  // --- EXPORTS ---
+  // Expose the state, getters, and actions for components to use.
   return {
-    lists,
-    currentList,
-    filterByDate,
-    currentTasks,
+    tasks,
     pendingCount,
-    load,
-    addList,
-    selectList,
-    setDateFilter,
+    fetchTasks,
     addTask,
     removeTask,
+    updateTask,
     toggleDone,
   };
 });
