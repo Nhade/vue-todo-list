@@ -16,11 +16,12 @@ services:
     working_dir: /app
     command: >
       sh -c "
-      pip install --no-cache-dir -r requirements.txt &&
+      pip install --no-cache-dir -r backend/requirements.txt &&
+      cd backend &&
       uvicorn main:app --host 0.0.0.0 --port 8000 --reload
       "
     volumes:
-      - ./backend:/app
+      - .:/app
     env_file: .env
     depends_on:
       - db

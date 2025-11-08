@@ -59,12 +59,6 @@ def get_db():
         db.close()
 
 
-# Create tables at startup (handy for dev)
-@app.on_event("startup")
-def on_startup():
-    Base.metadata.create_all(bind=engine)
-
-
 @app.get("/")
 def read_root():
     return {"message": "Hello from FastAPI"}
