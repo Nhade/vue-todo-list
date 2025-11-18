@@ -7,7 +7,7 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from db import Base, engine, SessionLocal
-from models import Todo
+from models import Todo, Project
 
 app = FastAPI()
 
@@ -28,6 +28,7 @@ class TodoCreate(BaseModel):
     description: str | None = None
     due: datetime | None = None
     priority: str | None = None
+    project_id: UUID
 
 
 class TodoRead(BaseModel):
@@ -37,6 +38,7 @@ class TodoRead(BaseModel):
     due: datetime | None = None
     priority: str | None = None
     done: bool
+    project_id: UUID
 
     class Config:
         from_attributes = True
@@ -48,6 +50,19 @@ class TodoUpdate(BaseModel):
     due: datetime | None = None
     priority: str | None = None
     done: bool | None = None
+    project_id: UUID | None = None
+
+
+class ProjectRead(BaseModel):
+    id: UUID
+    name: str
+
+    class Config:
+        from_attributes = True
+
+
+class ProjectCreate(BaseModel):
+    name: str
 
 
 # DB dependency
@@ -65,9 +80,36 @@ def read_root():
 
 
 # CRUD
+@app.get("/projects", response_model=list[ProjectRead])
+def list_projects(db: Session = Depends(get_db)):
+    return db.query(Project).all()
+
+
+@app.post("/projects", response_model=ProjectRead, status_code=201)
+def create_project(payload: ProjectCreate, db: Session = Depends(get_db)):
+    project = Project(**payload.dict())
+    db.add(project)
+    db.commit()
+    db.refresh(project)
+    return project
+
+
+@app.delete("/projects/{project_id}", status_code=204)
+def delete_project(project_id: UUID, db: Session = Depends(get_db)):
+    project = db.get(Project, project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="Not found")
+    db.delete(project)
+    db.commit()
+    return
+
+
 @app.get("/todos", response_model=list[TodoRead])
-def list_todos(db: Session = Depends(get_db)):
-    return db.query(Todo).all()
+def list_todos(project_id: UUID | None = None, db: Session = Depends(get_db)):
+    query = db.query(Todo)
+    if project_id:
+        query = query.filter(Todo.project_id == project_id)
+    return query.all()
 
 
 @app.post("/todos", response_model=TodoRead, status_code=201)
