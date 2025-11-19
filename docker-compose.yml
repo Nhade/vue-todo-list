@@ -18,6 +18,7 @@ services:
       sh -c "
       pip install --no-cache-dir -r backend/requirements.txt &&
       cd backend &&
+      alembic -c ../alembic.ini upgrade head &&
       uvicorn main:app --host 0.0.0.0 --port 8000 --reload
       "
     volumes:
