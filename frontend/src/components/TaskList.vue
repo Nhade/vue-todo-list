@@ -33,9 +33,9 @@ import BaseButtons from './BaseButtons.vue'
 const todo = useTodoStore()
 
 const tasksToShow = computed(() => {
-    const raw = todo.currentTasks
-    const filter = todo.filterByDate
-    if (!filter) return raw
+    const raw = todo.tasks
+    const filter = todo.dateFilterId
+    if (filter == "all") return raw
 
     return raw.filter(t => {
         try {
@@ -55,6 +55,7 @@ const tasksToShow = computed(() => {
         }
     })
 })
+
 
 function toggleDone(id) {
     todo.toggleDone(id)
