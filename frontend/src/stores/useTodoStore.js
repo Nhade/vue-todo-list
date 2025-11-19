@@ -5,12 +5,24 @@ export const useTodoStore = defineStore("todo", () => {
   // --- STATE ---
 
   /**
-   * The main array of tasks fetched from the backend.
+   * The main array of tasks fetched from the backend for the current project.
    * @type {import("vue").Ref<Array<object>>}
    */
   const tasks = ref([]);
+  /**
+   * The array of projects (lists).
+   * @type {import("vue").Ref<Array<object>>}
+   */
   const projects = ref([]);
+  /**
+   * The ID of the currently selected project.
+   * @type {import("vue").Ref<String>}
+   */
   const currentProjectId = ref("");
+  /**
+   * The currently selected date filter.
+   * @type {import("vue").Ref<'upcoming' | 'today' | 'past'>}
+   */
   const dateFilterId = ref("upcoming");
 
   /**
@@ -31,6 +43,11 @@ export const useTodoStore = defineStore("todo", () => {
 
   // --- ACTIONS ---
 
+  /**
+   * Fetches all projects from the backend. If no project is currently
+   * selected, it selects the first one by default. If there are no
+   * projects, it clears the task list.
+   */
   async function fetchProjects() {
     try {
       const response = await fetch(`${API_URL}/projects`);
@@ -58,6 +75,10 @@ export const useTodoStore = defineStore("todo", () => {
     }
   }
 
+  /**
+   * Adds a new project (list).
+   * @param {string} name - The name of the new project.
+   */
   async function addProject(name) {
     try {
       const response = await fetch(`${API_URL}/projects`, {
@@ -73,14 +94,18 @@ export const useTodoStore = defineStore("todo", () => {
     }
   }
 
+  /**
+   * Sets the current project and fetches its associated tasks.
+   * @param {string} projectId - The ID of the project to select.
+   */
   async function selectProject(projectId) {
     currentProjectId.value = projectId;
     fetchTasks();
   }
 
   /**
-   * Fetches all tasks from the backend and populates the state.
-   * Should be called when the application initializes.
+   * Fetches tasks for the currently selected project from the backend
+   * and populates the state.
    */
   async function fetchTasks() {
     if (currentProjectId.value) {
@@ -100,7 +125,7 @@ export const useTodoStore = defineStore("todo", () => {
   }
 
   /**
-   * Adds a new task.
+   * Adds a new task to the current project.
    * @param {object} taskData - The task data { name, description, due, priority }.
    */
   async function addTask(taskData) {
@@ -173,6 +198,10 @@ export const useTodoStore = defineStore("todo", () => {
     }
   }
 
+  /**
+   * Sets the date filter for tasks.
+   * @param {'upcoming' | 'today' | 'past'} id - The filter identifier.
+   */
   function setDateFilter(id) {
     dateFilterId.value = id;
   }
