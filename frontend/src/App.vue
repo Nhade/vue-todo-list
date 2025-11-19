@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { useTodoStore } from './stores/useTodoStore'
 import AlertBox from './components/AlertBox.vue'
 import BaseButton from './components/BaseButtons.vue'
@@ -8,7 +8,7 @@ import TaskInlineForm from './components/TaskInlineForm.vue'
 import TaskList from './components/TaskList.vue'
 
 const todo = useTodoStore()
-todo.fetchTasks()
+todo.fetchProjects()
 
 const sidebarOpen = ref(false)
 const alertRef = ref()
@@ -20,27 +20,10 @@ function showAlert(msg) {
   alertRef.value.showAlert(msg)
 }
 
-const menuLists = computed(() => [
-  {
-    name: 'Default',
-    pendingCount: todo.pendingCount
-  }
-])
-
-/*
-function handleCreateList(name) {
-  todo.addList(name)
-  todo.selectList(name)
-}
-
-function handleSelectList(name) {
-  todo.selectList(name)
-}
-
 function handleFilter(f) {
   todo.setDateFilter(f)
 }
-*/
+
 </script>
 
 <template>
@@ -55,7 +38,8 @@ function handleFilter(f) {
       Add New Task
     </BaseButton>
     <TaskList />
-    <TaskMenu :lists="menuLists" @alert="(msg) => showAlert(msg)" />
+    <TaskMenu :initial-filter="todo.dateFilterId" @alert="(msg) => showAlert(msg)" @change-filter="handleFilter"
+      @toggle-menu="toggleSidebar" />
     <TaskInlineForm @cancel="toggleSidebar" @alert="(msg) => showAlert(msg)" @saved="toggleSidebar"
       :sidebarOpen="sidebarOpen" />
   </div>

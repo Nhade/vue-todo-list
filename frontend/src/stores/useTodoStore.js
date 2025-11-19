@@ -9,6 +9,9 @@ export const useTodoStore = defineStore("todo", () => {
    * @type {import("vue").Ref<Array<object>>}
    */
   const tasks = ref([]);
+  const projects = ref([]);
+  const currentProjectId = ref("");
+  const dateFilterId = ref("upcoming");
 
   /**
    * The base URL for the backend API.
@@ -28,17 +31,71 @@ export const useTodoStore = defineStore("todo", () => {
 
   // --- ACTIONS ---
 
+  async function fetchProjects() {
+    try {
+      const response = await fetch(`${API_URL}/projects`);
+      if (!response.ok) throw new Error("Failed to fetch projects");
+      const fetchedProjects = await response.json();
+      projects.value = fetchedProjects;
+
+      const currentProjectExists = fetchedProjects.some(
+        (p) => p.id === currentProjectId.value
+      );
+
+      if (!currentProjectExists && fetchedProjects.length > 0) {
+        selectProject(fetchedProjects[0].id);
+      } else if (fetchedProjects.length === 0) {
+        currentProjectId.value = "";
+        tasks.value = [];
+      } else {
+        fetchTasks();
+      }
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+      projects.value = [];
+      tasks.value = [];
+      currentProjectId.value = "";
+    }
+  }
+
+  async function addProject(name) {
+    try {
+      const response = await fetch(`${API_URL}/projects`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name }),
+      });
+      if (!response.ok) throw new Error("Failed to add project");
+      const newProject = await response.json();
+      projects.value.push(newProject);
+    } catch (error) {
+      console.error("Error adding project:", error);
+    }
+  }
+
+  async function selectProject(projectId) {
+    currentProjectId.value = projectId;
+    fetchTasks();
+  }
+
   /**
    * Fetches all tasks from the backend and populates the state.
    * Should be called when the application initializes.
    */
   async function fetchTasks() {
-    try {
-      const response = await fetch(`${API_URL}/todos`);
-      if (!response.ok) throw new Error("Failed to fetch tasks");
-      tasks.value = await response.json();
-    } catch (error) {
-      console.error("Error fetching tasks:", error);
+    if (currentProjectId.value) {
+      const url = new URL(`${API_URL}/todos`);
+      url.searchParams.append("project_id", currentProjectId.value);
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Failed to fetch tasks");
+        tasks.value = await response.json();
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+      }
+    } else {
+      tasks.value = [];
+      console.error("No project selected");
     }
   }
 
@@ -47,6 +104,11 @@ export const useTodoStore = defineStore("todo", () => {
    * @param {object} taskData - The task data { name, description, due, priority }.
    */
   async function addTask(taskData) {
+    if (!currentProjectId.value) {
+      console.error("No project selected");
+      return;
+    }
+    taskData.project_id = currentProjectId.value;
     try {
       const response = await fetch(`${API_URL}/todos`, {
         method: "POST",
@@ -111,11 +173,22 @@ export const useTodoStore = defineStore("todo", () => {
     }
   }
 
+  function setDateFilter(id) {
+    dateFilterId.value = id;
+  }
+
   // --- EXPORTS ---
   // Expose the state, getters, and actions for components to use.
   return {
     tasks,
     pendingCount,
+    projects,
+    currentProjectId,
+    dateFilterId,
+    setDateFilter,
+    fetchProjects,
+    addProject,
+    selectProject,
     fetchTasks,
     addTask,
     removeTask,

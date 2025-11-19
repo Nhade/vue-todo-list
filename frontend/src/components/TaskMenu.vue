@@ -23,15 +23,15 @@
 
             <div class="menu-by-list">
                 <span class="title-small">Lists</span>
-                <div v-for="lst in lists" :key="lst.name" :class="{ selected: lst.name === selectedList }"
-                    @click="selectList(lst.name)">
+                <div v-for="prj in todo.projects" :key="prj.id" :class="{ selected: prj.id === todo.currentProjectId }"
+                    @click="selectList(prj.id)">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                         viewBox="0 0 24 24">
                         <rect x="4" y="4" width="16" height="16" stroke="currentColor" stroke-width="2" rx="4" ry="4" />
                     </svg>
-                    <span>{{ lst.name }}</span>
-                    <span v-if="lst.pendingCount > 0" class="notif-badge">
-                        {{ lst.pendingCount }}
+                    <span>{{ prj.name }}</span>
+                    <span v-if="prj.pendingCount > 0" class="notif-badge">
+                        {{ prj.pendingCount }}
                     </span>
                 </div>
 
@@ -59,13 +59,11 @@
 
 <script setup>
 import { ref, nextTick } from 'vue'
+import { useTodoStore } from '../stores/useTodoStore'
+
+const todo = useTodoStore()
 
 const props = defineProps({
-    lists: {
-        type: Array,
-        default: () => []
-    },
-    initialSelectedList: String,
     initialFilter: {
         type: String,
         default: 'upcoming'
@@ -75,8 +73,6 @@ const props = defineProps({
 const emit = defineEmits([
     'toggle-menu',
     'change-filter',
-    'change-list',
-    'create-list',
     'alert'
 ])
 
@@ -114,7 +110,6 @@ const dateFilters = [
 ]
 
 const selectedFilter = ref(props.initialFilter)
-const selectedList = ref(props.initialSelectedList || '')
 
 const creating = ref(false)
 const newListName = ref('')
@@ -125,9 +120,8 @@ function selectFilter(id) {
     emit('change-filter', id)
 }
 
-function selectList(name) {
-    selectedList.value = name
-    emit('change-list', name)
+function selectList(id) {
+    todo.selectProject(id)
 }
 
 function openCreate() {
@@ -140,21 +134,19 @@ function cancelCreate() {
     newListName.value = ''
 }
 
-/*
 function submitCreate() {
     const name = newListName.value.trim()
     if (!name) {
         emit('alert', 'List name cannot be empty!')
         return
     }
-    if (props.lists.some(l => l.name === name)) {
+    if (todo.projects.some(l => l.name === name)) {
         emit('alert', 'A list with this name already exists!')
         return
     }
-    emit('create-list', name)
+    todo.addProject(name)
     cancelCreate()
 }
-*/
 </script>
 
 <style scoped>
