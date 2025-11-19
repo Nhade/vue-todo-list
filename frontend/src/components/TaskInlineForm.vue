@@ -99,6 +99,11 @@ async function fetchActivity() {
 function onSave() {
     const name = taskName.value.trim()
 
+    if (!todo.currentProjectId) {
+        emit("alert", "Please select a project first!")
+        return
+    }
+
     if (!name) {
         emit("alert", "Task name cannot be empty!")
         return
