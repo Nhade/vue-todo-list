@@ -35,7 +35,7 @@ const todo = useTodoStore()
 const tasksToShow = computed(() => {
     const raw = todo.tasks
     const filter = todo.dateFilterId
-    if (!filter) return raw
+    if (filter == "all") return raw
 
     return raw.filter(t => {
         try {

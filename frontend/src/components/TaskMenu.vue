@@ -14,7 +14,7 @@
 
             <div class="menu-by-date">
                 <span class="title-small">Tasks</span>
-                <div v-for="f in dateFilters" :key="f.id" :class="{ selected: f.id === selectedFilter }"
+                <div v-for="f in dateFilters" :key="f.id" :class="{ selected: f.id === todo.dateFilterId }"
                     @click="selectFilter(f.id)">
                     <span class="icon-container" v-html="f.svg"></span>
                     <span class="label">{{ f.label }}</span>
@@ -63,16 +63,8 @@ import { useTodoStore } from '../stores/useTodoStore'
 
 const todo = useTodoStore()
 
-const props = defineProps({
-    initialFilter: {
-        type: String,
-        default: 'upcoming'
-    }
-})
-
 const emit = defineEmits([
     'toggle-menu',
-    'change-filter',
     'alert'
 ])
 
@@ -109,15 +101,12 @@ const dateFilters = [
     }
 ]
 
-const selectedFilter = ref(props.initialFilter)
-
 const creating = ref(false)
 const newListName = ref('')
 const newListInput = ref(null)
 
 function selectFilter(id) {
-    selectedFilter.value = id
-    emit('change-filter', id)
+    todo.setDateFilter(id)
 }
 
 function selectList(id) {

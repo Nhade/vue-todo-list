@@ -20,10 +20,6 @@ function showAlert(msg) {
   alertRef.value.showAlert(msg)
 }
 
-function handleFilter(f) {
-  todo.setDateFilter(f)
-}
-
 </script>
 
 <template>
@@ -38,8 +34,7 @@ function handleFilter(f) {
       Add New Task
     </BaseButton>
     <TaskList />
-    <TaskMenu :initial-filter="todo.dateFilterId" @alert="(msg) => showAlert(msg)" @change-filter="handleFilter"
-      @toggle-menu="toggleSidebar" />
+    <TaskMenu @alert="(msg) => showAlert(msg)" @toggle-menu="toggleSidebar" />
     <TaskInlineForm @cancel="toggleSidebar" @alert="(msg) => showAlert(msg)" @saved="toggleSidebar"
       :sidebarOpen="sidebarOpen" />
   </div>

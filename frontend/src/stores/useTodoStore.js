@@ -21,9 +21,9 @@ export const useTodoStore = defineStore("todo", () => {
   const currentProjectId = ref("");
   /**
    * The currently selected date filter.
-   * @type {import("vue").Ref<'upcoming' | 'today' | 'past'>}
+   * @type {import("vue").Ref<'upcoming' | 'today' | 'past' | 'all'>}
    */
-  const dateFilterId = ref("upcoming");
+  const dateFilterId = ref("all");
 
   /**
    * The base URL for the backend API.
@@ -199,11 +199,16 @@ export const useTodoStore = defineStore("todo", () => {
   }
 
   /**
-   * Sets the date filter for tasks.
-   * @param {'upcoming' | 'today' | 'past'} id - The filter identifier.
+   * Sets the date filter for tasks. If the same filter is clicked again,
+   * it will be deselected (reverting to "all").
+   * @param {'upcoming' | 'today' | 'past' | 'all'} id - The filter identifier.
    */
   function setDateFilter(id) {
-    dateFilterId.value = id;
+    if (dateFilterId.value === id) {
+      dateFilterId.value = "all";
+    } else {
+      dateFilterId.value = id;
+    }
   }
 
   // --- EXPORTS ---
