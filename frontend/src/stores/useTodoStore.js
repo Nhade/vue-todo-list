@@ -29,7 +29,7 @@ export const useTodoStore = defineStore("todo", () => {
    * The base URL for the backend API.
    * @type {string}
    */
-  const API_URL = "http://localhost:8000";
+  const API_URL = "/api";
 
   // --- GETTERS ---
 
@@ -109,7 +109,7 @@ export const useTodoStore = defineStore("todo", () => {
    */
   async function fetchTasks() {
     if (currentProjectId.value) {
-      const url = new URL(`${API_URL}/todos`);
+      const url = new URL(`${API_URL}/todos`, window.location.origin);
       url.searchParams.append("project_id", currentProjectId.value);
       try {
         const response = await fetch(url);
